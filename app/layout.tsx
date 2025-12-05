@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
-import { koKR } from "@clerk/localizations";
 import { Geist, Geist_Mono } from "next/font/google";
-
+import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import { SyncUserProvider } from "@/components/providers/sync-user-provider";
 import "./globals.css";
@@ -25,25 +23,11 @@ export const metadata: Metadata = {
 // 동적 렌더링 강제 (빌드 시 환경 변수 없이도 빌드 가능)
 export const dynamic = "force-dynamic";
 
-// ClerkProvider 래퍼 컴포넌트
-function ClerkProviderWrapper({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-
-  // 환경 변수가 없으면 ClerkProvider 없이 렌더링
-  if (!publishableKey || publishableKey === "pk_test_build_placeholder_key_for_ci_cd") {
-    return <>{children}</>;
-  }
-
-  return (
-    <ClerkProvider publishableKey={publishableKey} localization={koKR}>
-      {children}
-    </ClerkProvider>
-  );
-}
+// ClerkProvider를 동적으로 로드 (SSR 비활성화)
+const ClerkProviderWrapper = dynamic(
+  () => import("@/components/providers/clerk-provider-wrapper"),
+  { ssr: false }
+);
 
 export default function RootLayout({
   children,
