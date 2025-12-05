@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useUser } from "@clerk/nextjs";
 import { useClerkSupabaseClient } from "@/lib/supabase/clerk-client";
 import { Button } from "@/components/ui/button";
 import { LuShield, LuCheck, LuX, LuTriangleAlert } from "react-icons/lu";
@@ -18,8 +17,52 @@ interface UserData {
 }
 
 export default function AuthTestPage() {
-  const { user, isLoaded } = useUser();
+  const [user, setUser] = useState<any>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasClerk, setHasClerk] = useState(false);
+  const [ClerkComponents, setClerkComponents] = useState<any>(null);
   const supabase = useClerkSupabaseClient();
+
+  // Clerk useUser를 안전하게 사용
+  useEffect(() => {
+    const hasClerkKey = !!(
+      typeof window !== "undefined" &&
+      (window as any).__NEXT_DATA__?.env?.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+      (window as any).__NEXT_DATA__.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !==
+        "pk_test_build_placeholder_key_for_ci_cd" &&
+      (window as any).__NEXT_DATA__.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith("pk_")
+    );
+
+    if (!hasClerkKey) {
+      setIsLoaded(true);
+      return;
+    }
+
+    setHasClerk(true);
+
+    // Clerk 컴포넌트 로드
+    import("@clerk/nextjs")
+      .then((clerk) => {
+        setClerkComponents({
+          useUser: clerk.useUser,
+        });
+        setIsLoaded(true);
+      })
+      .catch(() => {
+        setIsLoaded(true);
+        setHasClerk(false);
+      });
+  }, []);
+
+  // ClerkComponents가 로드되면 useUser 사용
+  const UserHook = ClerkComponents?.useUser;
+  const userHookResult = UserHook ? UserHook() : { user: null, isLoaded: false };
+
+  useEffect(() => {
+    if (userHookResult.isLoaded) {
+      setUser(userHookResult.user);
+    }
+  }, [userHookResult.user, userHookResult.isLoaded]);
 
   const [connectionStatus, setConnectionStatus] = useState<
     "idle" | "testing" | "success" | "error"
@@ -92,7 +135,7 @@ export default function AuthTestPage() {
       }
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "사용자 데이터 조회/생성 실패",
+        err instanceof Error ? err.message : "사용자 데이터 조회/생성 실패"
       );
       console.error("Fetch or create user error:", err);
     } finally {
@@ -136,6 +179,21 @@ export default function AuthTestPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p>로딩 중...</p>
+      </div>
+    );
+  }
+
+  if (!hasClerk) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <LuTriangleAlert className="w-16 h-16 text-yellow-500" />
+        <h1 className="text-2xl font-bold">Clerk 환경 변수가 설정되지 않았습니다</h1>
+        <p className="text-gray-600">
+          이 페이지는 Clerk 인증이 필요합니다.
+        </p>
+        <Link href="/">
+          <Button>홈으로 돌아가기</Button>
+        </Link>
       </div>
     );
   }
