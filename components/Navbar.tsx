@@ -69,48 +69,48 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* 중앙 메뉴 (데스크톱) */}
-          <nav className="hidden lg:flex items-center gap-8">
-            {["여성", "남성", "액세서리", "생활용품", "컬렉션"].map((item) => (
-              <Link
-                key={item}
-                href="#"
-                className="text-sm font-light tracking-wider text-[#1C1C1C] hover:text-[#8B7355] transition-colors uppercase"
-              >
-                {item}
-              </Link>
-            ))}
-          </nav>
+                {/* 중앙 메뉴 (데스크톱) */}
+                <nav className="hidden lg:flex items-center gap-8">
+                  {["Red", "White", "Sparkling", "Rosé", "Collection"].map((item) => (
+                    <Link
+                      key={item}
+                      href="#"
+                      className="text-sm font-light tracking-[0.2em] text-black hover:text-gray-600 transition-colors uppercase"
+                    >
+                      {item}
+                    </Link>
+                  ))}
+                </nav>
 
-          {/* 우측 메뉴 */}
-          <div className="flex items-center gap-6">
-            <button className="p-2 hover:opacity-70 transition-opacity">
-              <Search className="w-5 h-5 text-[#1C1C1C]" />
-            </button>
-            {hasClerkKey && ClerkComponents ? (
-              <>
-                <ClerkComponents.SignedOut>
-                  <ClerkComponents.SignInButton mode="modal">
-                    <button className="p-2 hover:opacity-70 transition-opacity">
-                      <User className="w-5 h-5 text-[#1C1C1C]" />
+                {/* 우측 메뉴 */}
+                <div className="flex items-center gap-6">
+                  <button className="p-2 hover:opacity-70 transition-opacity">
+                    <Search className="w-5 h-5 text-black" />
+                  </button>
+                  {hasClerkKey && ClerkComponents ? (
+                    <>
+                      <ClerkComponents.SignedOut>
+                        <ClerkComponents.SignInButton mode="modal">
+                          <button className="p-2 hover:opacity-70 transition-opacity">
+                            <User className="w-5 h-5 text-black" />
+                          </button>
+                        </ClerkComponents.SignInButton>
+                      </ClerkComponents.SignedOut>
+                      <ClerkComponents.SignedIn>
+                        <div className="flex items-center gap-4">
+                          <button className="p-2 hover:opacity-70 transition-opacity">
+                            <ShoppingBag className="w-5 h-5 text-black" />
+                          </button>
+                          <ClerkComponents.UserButton />
+                        </div>
+                      </ClerkComponents.SignedIn>
+                    </>
+                  ) : (
+                    <button className="p-2">
+                      <User className="w-5 h-5 text-black" />
                     </button>
-                  </ClerkComponents.SignInButton>
-                </ClerkComponents.SignedOut>
-                <ClerkComponents.SignedIn>
-                  <div className="flex items-center gap-4">
-                    <button className="p-2 hover:opacity-70 transition-opacity">
-                      <ShoppingBag className="w-5 h-5 text-[#1C1C1C]" />
-                    </button>
-                    <ClerkComponents.UserButton />
-                  </div>
-                </ClerkComponents.SignedIn>
-              </>
-            ) : (
-              <button className="p-2">
-                <User className="w-5 h-5 text-[#1C1C1C]" />
-              </button>
-            )}
-          </div>
+                  )}
+                </div>
         </div>
       </div>
     </header>

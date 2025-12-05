@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LUXURY - Premium Shopping",
-  description: "Timeless elegance meets modern sophistication",
+  title: "Wine Cellar - Premium Wine Collection",
+  description: "세계 최고의 와인을 한 곳에서 만나보세요",
 };
 
 // 동적 렌더링 강제 (빌드 시 환경 변수 없이도 빌드 가능)
