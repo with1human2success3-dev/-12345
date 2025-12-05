@@ -9,6 +9,7 @@ export default function ClerkProviderWrapper({
 }) {
   const [ClerkProvider, setClerkProvider] = useState<any>(null);
   const [publishableKey, setPublishableKey] = useState<string | null>(null);
+  const [localization, setLocalization] = useState<any>(null);
 
   useEffect(() => {
     const key =
@@ -18,9 +19,17 @@ export default function ClerkProviderWrapper({
 
     if (key && key !== "pk_test_build_placeholder_key_for_ci_cd" && key.startsWith("pk_")) {
       setPublishableKey(key);
-      import("@clerk/nextjs")
-        .then((clerk) => {
+      
+      // Clerk와 localization을 동시에 로드
+      Promise.all([
+        import("@clerk/nextjs"),
+        import("@clerk/localizations").catch(() => null),
+      ])
+        .then(([clerk, locales]) => {
           setClerkProvider(() => clerk.ClerkProvider);
+          if (locales) {
+            setLocalization(locales.koKR);
+          }
         })
         .catch(() => {
           // Clerk 로드 실패 시 무시
@@ -32,27 +41,11 @@ export default function ClerkProviderWrapper({
     return <>{children}</>;
   }
 
-  // koKR localization 동적 import
-  const [localization, setLocalization] = useState<any>(null);
-
-  useEffect(() => {
-    if (ClerkProvider && publishableKey) {
-      import("@clerk/localizations")
-        .then((locales) => {
-          setLocalization(locales.koKR);
-        })
-        .catch(() => {
-          // localization 로드 실패 시 무시
-        });
-    }
-  }, [ClerkProvider, publishableKey]);
-
-  if (!localization) {
-    return <ClerkProvider publishableKey={publishableKey}>{children}</ClerkProvider>;
-  }
-
   return (
-    <ClerkProvider publishableKey={publishableKey} localization={localization}>
+    <ClerkProvider
+      publishableKey={publishableKey}
+      localization={localization || undefined}
+    >
       {children}
     </ClerkProvider>
   );
