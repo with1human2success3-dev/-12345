@@ -10,3 +10,4 @@ export default function ErrorBoundaryWrapper({
   return <ErrorBoundary>{children}</ErrorBoundary>;
 }
 
+
