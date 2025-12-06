@@ -24,8 +24,9 @@
 2. [기술 스택](#기술-스택)
 3. [주요 기능](#주요-기능)
 4. [시작하기](#시작하기)
-5. [추가 설정 및 팁](#추가-설정-및-팁)
-6. [프로젝트 구조](#프로젝트-구조)
+5. [Vercel 배포](#vercel-배포)
+6. [추가 설정 및 팁](#추가-설정-및-팁)
+7. [프로젝트 구조](#프로젝트-구조)
 
 ## 소개
 
@@ -301,6 +302,100 @@ pnpm start
 # 린팅
 pnpm lint
 ```
+
+## Vercel 배포
+
+### 1. Vercel 프로젝트 생성
+
+1. [Vercel Dashboard](https://vercel.com/dashboard)에 접속하여 로그인
+2. **"Add New..."** → **"Project"** 클릭
+3. GitHub 저장소 선택 또는 연결
+4. 프로젝트 설정:
+   - **Framework Preset**: Next.js (자동 감지)
+   - **Root Directory**: `./` (기본값)
+   - **Build Command**: `npm run build` (기본값)
+   - **Output Directory**: `.next` (기본값)
+5. **"Deploy"** 클릭 (환경 변수는 나중에 설정)
+
+### 2. 환경 변수 설정
+
+배포 후 또는 배포 전에 환경 변수를 설정해야 합니다:
+
+1. Vercel Dashboard → 프로젝트 선택
+2. **Settings** → **Environment Variables** 메뉴
+3. 다음 환경 변수들을 추가:
+
+#### 필수 환경 변수
+
+**Clerk 환경 변수:**
+```
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxxxxxxxxxxxx
+CLERK_SECRET_KEY=sk_test_xxxxxxxxxxxxx
+```
+
+**Supabase 환경 변수 (있는 경우):**
+```
+NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxxxxxxxxxxxx
+SUPABASE_SERVICE_ROLE_KEY=eyJxxxxxxxxxxxxx
+NEXT_PUBLIC_STORAGE_BUCKET=uploads
+```
+
+#### 환경 변수 설정 옵션
+
+각 환경 변수에 대해 적용할 환경을 선택:
+- **Production**: 프로덕션 배포에만 적용
+- **Preview**: 프리뷰 배포에만 적용
+- **Development**: 개발 환경에만 적용
+- **All Environments**: 모든 환경에 적용 (권장)
+
+> **💡 팁**: 처음 배포할 때는 "All Environments"를 선택하는 것이 편리합니다.
+
+### 3. 환경 변수 적용 및 재배포
+
+환경 변수를 추가한 후:
+
+1. **"Save"** 클릭
+2. **"Redeploy"** 버튼 클릭 (또는 새 커밋 푸시)
+3. 배포 완료 대기
+
+### 4. 배포 확인
+
+배포가 완료되면:
+
+1. Vercel Dashboard에서 배포 URL 확인 (예: `https://your-project.vercel.app`)
+2. 브라우저에서 배포 URL 접속
+3. 로그인 버튼이 정상적으로 표시되는지 확인
+4. 브라우저 개발자 도구 (F12) → Console 탭에서 에러 확인
+
+### 5. 문제 해결
+
+**로그인 버튼이 보이지 않는 경우:**
+
+1. **환경 변수 확인**
+   - Vercel Dashboard → Settings → Environment Variables
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`가 올바르게 설정되었는지 확인
+   - 키가 `pk_test_` 또는 `pk_live_`로 시작하는지 확인
+
+2. **재배포**
+   - 환경 변수 추가/수정 후 반드시 재배포 필요
+   - Vercel Dashboard → Deployments → 최신 배포 → "Redeploy" 클릭
+
+3. **브라우저 콘솔 확인**
+   - F12 → Console 탭
+   - `[Navbar] Clerk Key Check` 로그 확인
+   - 에러 메시지 확인
+
+4. **빌드 로그 확인**
+   - Vercel Dashboard → Deployments → 최신 배포 → "Build Logs" 확인
+   - 빌드 중 에러가 있는지 확인
+
+### 6. 커스텀 도메인 설정 (선택사항)
+
+1. Vercel Dashboard → 프로젝트 → **Settings** → **Domains**
+2. 원하는 도메인 입력
+3. DNS 설정 안내에 따라 도메인 제공업체에서 DNS 레코드 추가
+4. DNS 전파 완료 대기 (보통 몇 분 ~ 몇 시간)
 
 ## 추가 설정 및 팁
 

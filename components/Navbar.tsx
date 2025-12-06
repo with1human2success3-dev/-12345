@@ -10,11 +10,29 @@ const Navbar = () => {
 
   useEffect(() => {
     try {
-      // 클라이언트에서 환경 변수 확인
-      const clerkKey =
+      // Vercel 배포 시에도 작동하도록 여러 경로 확인
+      const windowKey =
         typeof window !== "undefined"
           ? (window as any).__NEXT_DATA__?.env?.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
           : null;
+
+      // 빌드 타임에 주입된 환경 변수 (Vercel에서도 작동)
+      const processKey =
+        typeof process !== "undefined"
+          ? process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+          : null;
+
+      const clerkKey = windowKey || processKey;
+
+      // 개발 환경에서만 디버깅 로그 출력
+      if (process.env.NODE_ENV === "development") {
+        console.log("[Navbar] Clerk Key Check:", {
+          windowKey: windowKey ? "found" : "not found",
+          processKey: processKey ? "found" : "not found",
+          finalKey: clerkKey ? "found" : "not found",
+          keyPrefix: clerkKey?.substring(0, 10) + "...",
+        });
+      }
 
       const isValidKey =
         !!clerkKey &&
@@ -22,6 +40,9 @@ const Navbar = () => {
         clerkKey.startsWith("pk_");
 
       if (!isValidKey) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[Navbar] Invalid or missing Clerk key");
+        }
         setHasClerkKey(false);
         return;
       }
@@ -38,16 +59,22 @@ const Navbar = () => {
               SignedIn: clerk.SignedIn,
               UserButton: clerk.UserButton,
             });
+            if (process.env.NODE_ENV === "development") {
+              console.log("[Navbar] Clerk components loaded successfully");
+            }
           } else {
+            if (process.env.NODE_ENV === "development") {
+              console.warn("[Navbar] Clerk components not found");
+            }
             setHasClerkKey(false);
           }
         })
         .catch((error) => {
-          console.warn("Failed to load Clerk components:", error);
+          console.error("[Navbar] Failed to load Clerk components:", error);
           setHasClerkKey(false);
         });
     } catch (error) {
-      console.warn("Navbar Clerk setup error:", error);
+      console.error("[Navbar] Clerk setup error:", error);
       setHasClerkKey(false);
     }
   }, []);
