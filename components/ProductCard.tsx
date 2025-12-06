@@ -43,14 +43,18 @@ export default function ProductCard({
     "border-black/5",
     "p-4",
     "shadow-sm",
-    "hover:shadow-lg",
+    "hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]",
+    "hover:-translate-y-2",
+    "hover:scale-[1.03]",
+    "active:scale-[0.97]",
     "transition-all",
-    "duration-200",
-    "ease-in-out",
-    "hover:scale-[1.02]",
+    "duration-[350ms]",
+    "ease-out",
     "cursor-pointer",
     "flex",
     "flex-col",
+    "relative",
+    "overflow-hidden",
     variant === "compact" ? "w-[75vw] sm:w-full flex-shrink-0" : "w-full",
   ].join(" ");
 
@@ -63,7 +67,7 @@ export default function ProductCard({
             src={defaultImageUrl}
             alt={name}
             fill
-            className="object-cover"
+            className="object-cover transition-all duration-[350ms] ease-out group-hover:brightness-110 group-hover:scale-105"
             onError={() => setImageError(true)}
             sizes={variant === "compact" ? "75vw" : "(max-width: 768px) 75vw, 33vw"}
           />
@@ -105,7 +109,7 @@ export default function ProductCard({
 
       {/* 테이스팅 노트 & 페어링 (hover 시 표시) */}
       {(tasting || pairing) && (
-        <div className="text-xs text-gray-400 font-light space-y-1 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="text-xs text-gray-400 font-light space-y-1 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-[350ms] ease-out">
           {tasting && <p className="italic">테이스팅 노트: {tasting}</p>}
           {pairing && <p className="mt-2">페어링 추천: {pairing}</p>}
         </div>
